@@ -1,1 +1,6 @@
-Always Show NPC Flags is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+A simple mod that forces NPC housing banners to always display, no matter if the housing menu is open or closed.
+
+NOTE: By default, NPCs cannot be kicked out unless you are in the housing menu. This may be changed in the config.
+
+Changelog:
+ - 1.0.0.0: Release
