@@ -5,3 +5,4 @@ NOTE: By default, NPCs cannot be kicked out unless you are in the housing menu. 
 Changelog:
  - 1.0.0.0: Release
  - 1.0.0.1: Added icon.
+ - 1.0.0.2: Ported to tModLoader v0.12 Alpha.

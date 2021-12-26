@@ -1,6 +1,7 @@
 using NPCFlagsAlways.Common.Configs;
 using System.Reflection;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI.Gamepad;
@@ -14,7 +15,7 @@ namespace NPCFlagsAlways
 		/// <summary>
 		/// The original condition used to determine whether NPC housing flags should be drawn. Used for brevity.
 		/// </summary>
-		private bool OriginalFailCondition => Main.EquipPage != 1 && !UILinkPointNavigator.Shortcuts.NPCS_IconsDisplay;
+		private static bool OriginalFailCondition => Main.EquipPage != 1 && (!UILinkPointNavigator.Shortcuts.NPCS_IconsDisplay || !PlayerInput.UsingGamepad);
 
 		public NPCFlagsAlways()
 		{
@@ -22,7 +23,7 @@ namespace NPCFlagsAlways
 
 		public override void Load()
 		{
-			_drawNPCHouse_Cached = typeof(Main).GetMethod("DrawNPCHouse", BindingFlags.Instance | BindingFlags.NonPublic);
+			_drawNPCHouse_Cached = typeof(Main).GetMethod("DrawNPCHousesInWorld", BindingFlags.Instance | BindingFlags.NonPublic);
 			On.Terraria.Main.DrawInterface_7_TownNPCHouseBanners += ForceDrawHouseBanners;
 			On.Terraria.WorldGen.kickOut += PreventUnintentionalEvictions;
 		}
