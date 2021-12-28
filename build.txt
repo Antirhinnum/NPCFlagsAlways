@@ -1,9 +1,9 @@
 displayName = Always Show NPC Banners
 author = Snek
-version = 1.0.0.2
+version = 1.0.1.0
 homepage = https://forums.terraria.org/index.php?threads/always-show-npc-banners.110100/
 hideCode = false
 hideResources = false
 includeSource = true
-buildIgnore = build.txt, ./*, bin/*, obj/*, Properties/*, .gitignore, LICENSE, README.md
+buildIgnore = build.txt, ./*, bin/*, obj/*, Properties/*, .gitignore, LICENSE, README.md, *.pdn
 includePDB = true

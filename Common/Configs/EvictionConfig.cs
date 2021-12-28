@@ -8,8 +8,8 @@ namespace NPCFlagsAlways.Common.Configs
 		public override ConfigScope Mode => ConfigScope.ClientSide;
 
 		[DefaultValue(false)]
-		[DisplayName("Eviction Always Allowed")]
-		[Tooltip("If true, then right-clicking an NPC banner will evict them even if the housing menu is closed.")]
+		[Label("$Mods.NPCFlagsAlways.Config.EvictionAllowed.Label")]
+		[Tooltip("$Mods.NPCFlagsAlways.Config.EvictionAllowed.Tooltip")]
 		public bool EvictionAllowed { get; set; }
 	}
 }
