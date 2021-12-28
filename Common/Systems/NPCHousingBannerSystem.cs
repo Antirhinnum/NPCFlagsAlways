@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using NPCFlagsAlways.Common.Configs;
 using NPCFlagsAlways.Common.Players;
@@ -39,6 +38,7 @@ namespace NPCFlagsAlways.Common.Systems
 			On.Terraria.Main.DrawInterface_7_TownNPCHouseBanners += ForceDrawHouseBanners;
 			On.Terraria.Main.GetBuilderAccsCountToShow += MakeSpaceForBannerVisibilityIcon;
 			On.Terraria.WorldGen.kickOut += PreventUnintentionalEvictions;
+			IL.Terraria.Main.DrawNPCHousesInWorld += NPCBannerDrawColor;
 
 			UILinkPage builderAccPage = UILinkPointNavigator.Pages[GamepadPageID.BuilderAccs];
 			UILinkPoint point = new(6012, enabled: true, -3, 40, -1, -2);
@@ -49,6 +49,7 @@ namespace NPCFlagsAlways.Common.Systems
 
 		public override void Unload()
 		{
+			IL.Terraria.Main.DrawNPCHousesInWorld -= NPCBannerDrawColor;
 			On.Terraria.WorldGen.kickOut -= PreventUnintentionalEvictions;
 			On.Terraria.Main.GetBuilderAccsCountToShow -= MakeSpaceForBannerVisibilityIcon;
 			On.Terraria.Main.DrawInterface_7_TownNPCHouseBanners -= ForceDrawHouseBanners;
@@ -80,20 +81,23 @@ namespace NPCFlagsAlways.Common.Systems
 				drawPositionY = 71;
 			}
 
+			if (!Main.LocalPlayer.unlockedBiomeTorches)
+			{
+				drawPositionY -= 24;
+			}
+
 			ref BannerVisibility visibility = ref Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility;
 			Color disabledColor = new(127, 127, 127);
 
 			Color drawColor = visibility switch
 			{
-				BannerVisibility.Bright => Color.White,
 				BannerVisibility.Normal => disabledColor,
 				BannerVisibility.Faded => disabledColor * 0.66f,
-				BannerVisibility.Hidden => disabledColor * 0.33f,
 				_ => Color.White
 			};
 
 			Texture2D texture = _bannerIconAsset.Value;
-			Rectangle frame = texture.Frame(2, 1, frameX: 0);
+			Rectangle frame = texture.Frame(3, 1, frameX: visibility == BannerVisibility.Hidden ? 1 : 0);
 
 			bool mouseHovering = false;
 			if (Main.mouseX > 0 && Main.mouseX < frame.Width && Main.mouseY > drawPositionY && Main.mouseY < drawPositionY + frame.Height)
@@ -109,7 +113,7 @@ namespace NPCFlagsAlways.Common.Systems
 				{
 					SoundEngine.PlaySound(22);
 					visibility += 1;
-					if ((int)visibility >= (int)BannerVisibility.Hidden)
+					if ((int)visibility > (int)BannerVisibility.Hidden)
 					{
 						visibility = BannerVisibility.Bright;
 					}
@@ -120,7 +124,7 @@ namespace NPCFlagsAlways.Common.Systems
 			Main.spriteBatch.Draw(texture, drawPosition, frame, drawColor, 0f, default, 0.9f, SpriteEffects.None, 0f);
 			if (mouseHovering)
 			{
-				Main.spriteBatch.Draw(texture, drawPosition, texture.Frame(2, 1, frameX: 1), Main.OurFavoriteColor, 0f, default, 0.9f, SpriteEffects.None, 0f);
+				Main.spriteBatch.Draw(texture, drawPosition, texture.Frame(3, 1, frameX: 2), Main.OurFavoriteColor, 0f, default, 0.9f, SpriteEffects.None, 0f);
 			}
 
 			UILinkPointNavigator.SetPosition(GamepadPointID.BuilderAccs + 2, drawPosition + (frame.Size() * 0.65f));
@@ -132,7 +136,7 @@ namespace NPCFlagsAlways.Common.Systems
 			orig(self);
 
 			// Only force drawing if the condition in DrawInterface_7 fails.
-			if (OriginalFailCondition)
+			if (OriginalFailCondition && Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility != BannerVisibility.Hidden)
 			{
 				_DrawNPCHousesInWorld_Cached.Invoke(Main.instance, Array.Empty<object>());
 			}
@@ -143,7 +147,7 @@ namespace NPCFlagsAlways.Common.Systems
 			// Increase torchGodIcons so that the banner toggle goes above wiring toggles.
 			orig(plr, out blockReplaceIcons, out torchGodIcons, out totalDrawnIcons);
 			torchGodIcons += 1;
-			//totalDrawnIcons += 1;
+			totalDrawnIcons += 1;
 		}
 
 		private void PreventUnintentionalEvictions(On.Terraria.WorldGen.orig_kickOut orig, int n)
@@ -151,11 +155,46 @@ namespace NPCFlagsAlways.Common.Systems
 			// Only allow NPCs to be evicted if:
 			//	You are the server (has no UI to click, unaffected by this mod), OR
 			//	Flags should be drawn (housing menu open, proceed a normal), OR
-			//	Eviction is always allowed
-			if (Main.netMode == NetmodeID.Server || !OriginalFailCondition || ModContent.GetInstance<EvictionConfig>().EvictionAllowed)
+			//	Eviction is always allowed and banners are being drawn.
+			if (Main.netMode == NetmodeID.Server || !OriginalFailCondition || (ModContent.GetInstance<EvictionConfig>().EvictionAllowed && Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility != BannerVisibility.Hidden))
 			{
 				orig(n);
 			}
+		}
+
+		/// <summary>
+		/// Replaces the two Lighting.GetColor calls in Main.DrawNPCHousesInWorld() with a custom color function.
+		/// </summary>
+		/// <param name="il"></param>
+		private void NPCBannerDrawColor(ILContext il)
+		{
+			ILCursor cursor = new(il);
+
+			// Replace both calls: one for the banner, one for the NPC head.
+			for (int i = 0; i < 2; i++)
+			{
+				if (!cursor.TryGotoNext(MoveType.Before,
+					i => i.MatchCall<Lighting>(nameof(Lighting.GetColor))))
+				{
+					throw new Exception(Language.GetText("Mods.NPCFlagsAlways.Common.ILPatchFail").FormatWith(Language.GetTextValue("Mods.NPCFlagsAlways.Common.LightingILFail") + $" {i + 1}"));
+				}
+
+				cursor.Remove();
+				cursor.EmitDelegate(GetNPCBannerColor);
+			}
+		}
+
+		private Color GetNPCBannerColor(int x, int y)
+		{
+			BannerVisibility visibility = Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility;
+			Color baseColor = Lighting.GetColor(x, y);
+			return visibility switch
+			{
+				BannerVisibility.Bright => Color.White,
+				BannerVisibility.Faded => baseColor * 0.5f,
+				BannerVisibility.Hidden => OriginalFailCondition ? Color.Transparent : baseColor,
+				_ => baseColor,
+			};
 		}
 	}
 }

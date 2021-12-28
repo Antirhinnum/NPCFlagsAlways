@@ -21,6 +21,11 @@ namespace NPCFlagsAlways.Common.Players
 	{
 		public BannerVisibility bannerVisibility;
 
+		public override void Initialize()
+		{
+			bannerVisibility = BannerVisibility.Normal;
+		}
+
 		public override void SaveData(TagCompound tag)
 		{
 			SaveDataVersion version = SaveDataVersion.OnlyVisibility;
