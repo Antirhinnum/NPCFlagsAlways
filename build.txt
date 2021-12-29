@@ -1,6 +1,6 @@
 displayName = Always Show NPC Banners
 author = Snek
-version = 1.0.1.0
+version = 1.0.1.1
 homepage = https://forums.terraria.org/index.php?threads/always-show-npc-banners.110100/
 hideCode = false
 hideResources = false
