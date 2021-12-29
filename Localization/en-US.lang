@@ -1,0 +1,11 @@
+﻿ ----- Config -----
+
+Config.EvictionAllowed.Label=Eviction Always Allowed
+Config.EvictionAllowed.Tooltip=If true, then right-clicking an NPC banner will evict them even if the housing menu is closed
+
+ ----- Common -----
+
+Common.NPCBanner=NPC Banners
+Common.UnknownDataFormat=Player {0} tried to load data for {1}, but the format wasn't recognized. Format ID: {2}
+Common.ILPatchFail=Could not load mod because IL patch failed. Failure: {0}
+Common.LightingILFail=Banner Lighting Change
