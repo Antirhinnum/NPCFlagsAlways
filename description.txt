@@ -7,3 +7,4 @@ Changelog:
  - 1.0.0.1: Added icon.
  - 1.0.1.0: Added a toggle button for banner visibility, similar to The Grand Design and the Architect Gizmo Pack.
  - 1.0.1.1: Fixed a gamepad issue.
+ - 1.0.2.0: Changed to client-side, cleaned up backend a little. Fixed bugs where the mod would break when loaded on servers and the button was both finnicky to press and not appearing when it should have.
