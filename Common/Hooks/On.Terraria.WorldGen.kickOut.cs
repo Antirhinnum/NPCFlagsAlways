@@ -1,7 +1,6 @@
 ﻿using NPCFlagsAlways.Common.Configs;
 using NPCFlagsAlways.Common.Players;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace NPCFlagsAlways.Common.Hooks
@@ -11,10 +10,9 @@ namespace NPCFlagsAlways.Common.Hooks
 		private void WorldGen_kickOut(On.Terraria.WorldGen.orig_kickOut orig, int n)
 		{
 			// Only allow NPCs to be evicted if:
-			//	You are the server (has no UI to click, unaffected by this mod), OR
 			//	Flags should be drawn (housing menu open, proceed a normal), OR
 			//	Eviction is always allowed and banners are being drawn.
-			if (Main.netMode == NetmodeID.Server || !OriginalFailCondition || (ModContent.GetInstance<EvictionConfig>().EvictionAllowed && Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility != BannerVisibility.Hidden))
+			if (!OriginalFailCondition || (ModContent.GetInstance<EvictionConfig>().EvictionAllowed && Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility != BannerVisibility.Hidden))
 			{
 				orig(n);
 			}

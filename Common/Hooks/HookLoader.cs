@@ -27,6 +27,11 @@ namespace NPCFlagsAlways.Common.Hooks
 
 		public void Load(Mod mod)
 		{
+			if (Main.dedServ)
+			{
+				return;
+			}
+
 			_mod = mod;
 
 			_bannerIconAsset = ModContent.Request<Texture2D>(BannerIconAssetPath);

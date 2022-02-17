@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 using Terraria.UI.Gamepad;
 
 namespace NPCFlagsAlways.Common.Systems
@@ -12,11 +13,14 @@ namespace NPCFlagsAlways.Common.Systems
 
 		public override void Load()
 		{
-			UILinkPage builderAccPage = UILinkPointNavigator.Pages[GamepadPageID.BuilderAccs];
-			UILinkPoint point = new(FirstUnusedVanillaBuilderAccsID, enabled: true, GamepadPointID.EndLeft, GamepadPointID.Inventory40, GamepadPointID.EndUp, GamepadPointID.EndDown);
-			point.SetPage(GamepadPageID.BuilderAccs);
-			builderAccPage.LinkMap.Add(FirstUnusedVanillaBuilderAccsID, point);
-			UILinkPointNavigator.Points.Add(FirstUnusedVanillaBuilderAccsID, point);
+			if (!Main.dedServ)
+			{
+				UILinkPage builderAccPage = UILinkPointNavigator.Pages[GamepadPageID.BuilderAccs];
+				UILinkPoint point = new(FirstUnusedVanillaBuilderAccsID, enabled: true, GamepadPointID.EndLeft, GamepadPointID.Inventory40, GamepadPointID.EndUp, GamepadPointID.EndDown);
+				point.SetPage(GamepadPageID.BuilderAccs);
+				builderAccPage.LinkMap.Add(FirstUnusedVanillaBuilderAccsID, point);
+				UILinkPointNavigator.Points.Add(FirstUnusedVanillaBuilderAccsID, point);
+			}
 		}
 
 		public override void Unload()

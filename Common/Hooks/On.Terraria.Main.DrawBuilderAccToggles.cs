@@ -65,11 +65,7 @@ namespace NPCFlagsAlways.Common.Hooks
 				if (Main.mouseLeft && Main.mouseLeftRelease)
 				{
 					SoundEngine.PlaySound(SoundID.Unlock);
-					visibility += 1;
-					if ((int)visibility > (int)BannerVisibility.Hidden)
-					{
-						visibility = BannerVisibility.Bright;
-					}
+					visibility = visibility.NextEnum();
 				}
 			}
 
