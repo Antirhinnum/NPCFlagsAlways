@@ -10,8 +10,6 @@ Mods: {
 		Common: {
 			NPCBanner: NPC Banners
 			UnknownDataFormat: Player {0} tried to load data for {1}, but the format wasn't recognized. Format ID: {2}
-			ILPatchFail: Could not load mod because IL patch failed. Failure: {0}
-			LightingILFail: Banner Lighting Change
 		}
 	}
 }

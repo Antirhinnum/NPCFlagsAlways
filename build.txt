@@ -7,3 +7,4 @@ hideResources = false
 includeSource = true
 buildIgnore = build.txt, ./*, bin/*, obj/*, Properties/*, .gitignore, LICENSE, README.md, *.pdn
 includePDB = true
+side = Client

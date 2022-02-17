@@ -8,3 +8,4 @@ Changelog:
  - 1.0.0.2: Ported to tModLoader v0.12 Alpha.
  - 1.0.1.0: Added a toggle button for banner visibility, similar to The Grand Design and the Architect Gizmo Pack.
  - 1.0.1.1: Removed some leftover debug statements. Oops.
+ - 1.0.2.0: 
