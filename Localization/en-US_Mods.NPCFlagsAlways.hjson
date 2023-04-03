@@ -6,6 +6,4 @@ Config: {
 	}
 }
 
-Common: {
-	NPCBanner: NPC Banners
-}
+Common.NPCBanner: NPC Banners
