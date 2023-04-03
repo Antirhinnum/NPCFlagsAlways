@@ -4,48 +4,47 @@ using NPCFlagsAlways.Common.Players;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace NPCFlagsAlways.Common.Hooks
+namespace NPCFlagsAlways.Common.Hooks;
+
+internal sealed partial class HookLoader : ILoadable
 {
-	internal partial class HookLoader : ILoadable
+	/// <summary>
+	/// Replaces the two Lighting.GetColor calls in Main.DrawNPCHousesInWorld() with a custom color function.
+	/// </summary>
+	private void Main_DrawNPCHousesInWorld(ILContext il)
 	{
-		/// <summary>
-		/// Replaces the two Lighting.GetColor calls in Main.DrawNPCHousesInWorld() with a custom color function.
-		/// </summary>
-		private void Main_DrawNPCHousesInWorld(ILContext il)
+		ILCursor cursor = new(il);
+
+		// Replace both calls: one for the banner, one for the NPC head.
+		for (int i = 0; i < 2; i++)
 		{
-			ILCursor cursor = new(il);
+			///	Match:
+			///		... Lighting.GetColor(...) ...
+			///	Change to:
+			///		... GetNPCBannerColor(...) ...
 
-			// Replace both calls: one for the banner, one for the NPC head.
-			for (int i = 0; i < 2; i++)
+			if (!cursor.TryGotoNext(MoveType.Before,
+				i => i.MatchCall<Lighting>(nameof(Lighting.GetColor))))
 			{
-				///	Match:
-				///		... Lighting.GetColor(...) ...
-				///	Change to:
-				///		... GetNPCBannerColor(...) ...
-
-				if (!cursor.TryGotoNext(MoveType.Before,
-					i => i.MatchCall<Lighting>(nameof(Lighting.GetColor))))
-				{
-					LogHookFailed(il);
-					return;
-				}
-
-				cursor.Remove();
-				cursor.EmitDelegate(GetNPCBannerColor);
+				LogHookFailed(il);
+				return;
 			}
-		}
 
-		private Color GetNPCBannerColor(int x, int y)
-		{
-			BannerVisibility visibility = Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility;
-			Color baseColor = Lighting.GetColor(x, y);
-			return visibility switch
-			{
-				BannerVisibility.Bright => Color.White,
-				BannerVisibility.Faded => baseColor * 0.5f,
-				BannerVisibility.Hidden => OriginalFailCondition ? Color.Transparent : baseColor,
-				_ => baseColor,
-			};
+			cursor.Remove();
+			cursor.EmitDelegate(GetNPCBannerColor);
 		}
+	}
+
+	private Color GetNPCBannerColor(int x, int y)
+	{
+		BannerVisibility visibility = Main.LocalPlayer.GetModPlayer<BannerVisibilityPlayer>().bannerVisibility;
+		Color baseColor = Lighting.GetColor(x, y);
+		return visibility switch
+		{
+			BannerVisibility.Bright => Color.White,
+			BannerVisibility.Faded => baseColor * 0.5f,
+			BannerVisibility.Hidden => OriginalFailCondition ? Color.Transparent : baseColor,
+			_ => baseColor,
+		};
 	}
 }

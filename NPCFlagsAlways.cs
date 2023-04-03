@@ -1,8 +1,7 @@
 using Terraria.ModLoader;
 
-namespace NPCFlagsAlways
+namespace NPCFlagsAlways;
+
+public sealed class NPCFlagsAlways : Mod
 {
-	public class NPCFlagsAlways : Mod
-	{
-	}
 }

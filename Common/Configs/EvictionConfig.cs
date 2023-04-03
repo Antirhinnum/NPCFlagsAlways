@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel;
 using Terraria.ModLoader.Config;
 
-namespace NPCFlagsAlways.Common.Configs
-{
-	public class EvictionConfig : ModConfig
-	{
-		public override ConfigScope Mode => ConfigScope.ClientSide;
+namespace NPCFlagsAlways.Common.Configs;
 
-		[DefaultValue(false)]
-		[Label("$Mods.NPCFlagsAlways.Config.EvictionAllowed.Label")]
-		[Tooltip("$Mods.NPCFlagsAlways.Config.EvictionAllowed.Tooltip")]
-		public bool EvictionAllowed { get; set; }
-	}
+public sealed class EvictionConfig : ModConfig
+{
+	public override ConfigScope Mode => ConfigScope.ClientSide;
+
+	[DefaultValue(false)]
+	[Label("$Mods.NPCFlagsAlways.Config.EvictionAllowed.Label")]
+	[Tooltip("$Mods.NPCFlagsAlways.Config.EvictionAllowed.Tooltip")]
+	public bool EvictionAllowed { get; set; }
 }

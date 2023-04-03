@@ -1,12 +1,2 @@
-A simple mod that forces NPC housing banners to always display, no matter if the housing menu is open or closed.
-
-NOTE: By default, NPCs cannot be kicked out unless you are in the housing menu. This may be changed in the config.
-
-Changelog:
- - 1.0.0.0: Release
- - 1.0.0.1: Added icon.
- - 1.0.0.2: Ported to tModLoader v0.12 Alpha.
- - 1.0.1.0: Added a toggle button for banner visibility, similar to The Grand Design and the Architect Gizmo Pack.
- - 1.0.1.1: Removed some leftover debug statements. Oops.
- - 1.0.2.0: Re-did the backend of the mod.
- - 1.0.2.1: Updated for tModLoader's May freeze.
+Forces NPC housing banners to always be visible. You can change their opacity in the top-left corner of the inventory.
+By default, you cannot kick NPCs out unless you open the housing menu. This can be changed in the config.

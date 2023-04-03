@@ -2,51 +2,53 @@
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
-namespace NPCFlagsAlways.Common.Players
+namespace NPCFlagsAlways.Common.Players;
+
+public enum BannerVisibility
 {
-	public enum BannerVisibility
+	Bright,
+	Normal,
+	Faded,
+	Hidden
+}
+
+internal enum SaveDataVersion
+{
+	OnlyVisibility
+}
+
+public sealed class BannerVisibilityPlayer : ModPlayer
+{
+	private const string UnknownDataFormatWarning = "Player {0} tried to load data for {1}, but the format wasn't recognized. Format ID: {2}";
+
+	public BannerVisibility bannerVisibility;
+
+	public override void Initialize()
 	{
-		Bright,
-		Normal,
-		Faded,
-		Hidden
+		bannerVisibility = BannerVisibility.Normal;
 	}
 
-	internal enum SaveDataVersion
+	public override void SaveData(TagCompound tag)
 	{
-		OnlyVisibility
+		SaveDataVersion version = SaveDataVersion.OnlyVisibility;
+		tag.Add(nameof(version), (int)version);
+
+		tag.Add(nameof(bannerVisibility), (int)bannerVisibility);
 	}
 
-	public class BannerVisibilityPlayer : ModPlayer
+	public override void LoadData(TagCompound tag)
 	{
-		public BannerVisibility bannerVisibility;
-
-		public override void Initialize()
+		SaveDataVersion version = (SaveDataVersion)tag.Get<int>(nameof(version));
+		switch (version)
 		{
-			bannerVisibility = BannerVisibility.Normal;
-		}
+			case SaveDataVersion.OnlyVisibility:
+				bannerVisibility = (BannerVisibility)tag.Get<int>(nameof(bannerVisibility));
+				break;
 
-		public override void SaveData(TagCompound tag)
-		{
-			SaveDataVersion version = SaveDataVersion.OnlyVisibility;
-			tag.Add(nameof(version), (int)version);
-
-			tag.Add(nameof(bannerVisibility), (int)bannerVisibility);
-		}
-
-		public override void LoadData(TagCompound tag)
-		{
-			SaveDataVersion version = (SaveDataVersion)tag.Get<int>(nameof(version));
-			switch (version)
-			{
-				case SaveDataVersion.OnlyVisibility:
-					bannerVisibility = (BannerVisibility)tag.Get<int>(nameof(bannerVisibility));
-					break;
-				default:
-					Mod.Logger.WarnFormat(Language.GetTextValue("Mods.NPCFlagsAlways.Common.UnknownDataFormat"), Player.name, Mod.DisplayName, (int)version);
-					bannerVisibility = BannerVisibility.Normal;
-					break;
-			}
+			default:
+				Mod.Logger.WarnFormat(UnknownDataFormatWarning, Player.name, Mod.DisplayName, (int)version);
+				bannerVisibility = BannerVisibility.Normal;
+				break;
 		}
 	}
 }
